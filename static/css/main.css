@@ -3226,27 +3226,85 @@ input, select, textarea {
 		}
 
 		.wrapper.style1 {
-			background-color: #5e42a6;
+			background-color: #1d257f;
 		}
 
 		.wrapper.style1-alt {
-			background-color: #493382;
+			background-color: #1d257f;
 		}
 
 		.wrapper.style2 {
-			background-color: #5052b5;
+			background-color: #632f8e;
 		}
 
 		.wrapper.style2-alt {
-			background-color: #3e4094;
+			background-color: #632f8e;
 		}
 
 		.wrapper.style3 {
-			background-color: #b74e91;
+			background-color: #ffdd00;
 		}
 
 		.wrapper.style3-alt {
-			background-color: #953d75;
+			background-color: #ffdd00;
+		}
+
+		.wrapper.style4 {
+			background-color: #0b6304;
+		}
+
+		.wrapper.style4-alt {
+			background-color: #0b6304;
+		}
+
+
+		.wrapper.style5 {
+			background-color: #ce0000;
+		}
+
+		.wrapper.style5-alt {
+			background-color: #ce0000;
+		}
+
+		.wrapper.style6 {
+			background-color: #00cbff;
+		}
+
+		.wrapper.style6-alt {
+			background-color: #00cbff;
+		}
+
+		.wrapper.style7 {
+			background-color: #f9206c;
+		}
+
+		.wrapper.style7-alt {
+			background-color: #f9206c;
+		}
+
+		.wrapper.style8 {
+			background-color: #ff8c00;
+		}
+
+		.wrapper.style8-alt {
+			background-color: #ff8c00;
+		}
+
+
+		.wrapper.style9 {
+			background-color: #000000;
+		}
+
+		.wrapper.style9-alt {
+			background-color: #000000;
+		}
+
+		.wrapper.style10 {
+			background-color: #ffffff;
+		}
+
+		.wrapper.style10-alt {
+			background-color: #ffffff;
 		}
 
 		.wrapper.fullscreen {

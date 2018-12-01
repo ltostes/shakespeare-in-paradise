@@ -22,8 +22,9 @@ def get_stats():
 
     number_of_players = int(stats[0])
     start_time        = stats[1]
+    round             = int(stats[2])
 
-    return number_of_players, start_time
+    return number_of_players, start_time, round
 
 def load_words(words_path='palavras.csv'):
     raw_words = []
@@ -39,8 +40,11 @@ def startup(numberofplayers):
     words = load_words(words_path='palavras.csv')
     shuffle(words)
 
+    number_of_players, start_time, round = get_stats()
+
     number_of_players = numberofplayers
-    start_time = datetime.now().strftime(format="%Y-%m-%d %H:%M:%S")
+    start_time        = datetime.now().strftime(format="%Y-%m-%d %H:%M:%S")
+    round             = round+1
 
     player_words = []
 
@@ -49,17 +53,37 @@ def startup(numberofplayers):
 
     shuffle(player_words)
 
-    ret = {"words":words, "number_of_players":number_of_players, "start_time":start_time,"player_words":player_words}
+    ret = {"words":words, "number_of_players":number_of_players, "start_time":start_time,"player_words":player_words, "round":round}
+
+    return ret
+
+def blank_startup():
+
+    words = [""] * 10
+
+    number_of_players = 10
+    start_time        = datetime.now().strftime(format="%Y-%m-%d %H:%M:%S")
+    round             = 0
+
+    player_words = []
+
+    for player_number in range(0,number_of_players):
+        player_words.append(words[int((player_number)/2)])
+
+    shuffle(player_words)
+
+    ret = {"words":words, "number_of_players":10, "start_time":start_time,"player_words":player_words, "round":round}
 
     return ret
 
 def save_setup(setup):
 
-    number_of_players = setup['number_of_players']
-    start_time = setup['start_time']
-    player_words = setup['player_words']
+    number_of_players   = setup['number_of_players']
+    start_time          = setup['start_time']
+    player_words        = setup['player_words']
+    round               = str(setup['round'])
 
-    stats_raw = [str(number_of_players),start_time]
+    stats_raw = [str(number_of_players),start_time, round]
 
     with open('data/stats.txt', mode='wt', encoding='utf-8') as stats:
         stats.write('\n'.join(stats_raw))
@@ -88,24 +112,36 @@ def get_player_word(player_number):
 
     return player_word
 
+def get_word_message(player_number):
+
+    return "Yep. That's your word, player #{player_number}.".format(**{"player_number":player_number})
+
+
+def get_round_message(round):
+
+    return "By the way, this is round {round}.".format(**{"round":round})
+
 # a route where we will display a welcome message via an HTML template
 @app.route("/")
 def hello():
     message = "You are playing Shakeaspeare in Paradise!"
 
-    number_of_players, start_time = get_stats()
+    number_of_players, start_time, round = get_stats()
 
-    return render_template('index.html', message=message, number_of_players=number_of_players,start_time=start_time)
+    return render_template('index.html', message=message, number_of_players=number_of_players,start_time=start_time, round = round)
 
 # a route where we will display a welcome message via an HTML template
 @app.route("/player/<int:player_number>")
 def player(player_number):
 
-    number_of_players, start_time = get_stats()
+    number_of_players, start_time, round = get_stats()
+
+    if (player_number > number_of_players):
+        return render_template('player.html', player_number=player_number, player_word="Oops...",start_time=start_time,round=round,word_message="Seems like this player is not in the game this round",round_message="...And this is still round "+str(round))
 
     player_word = get_player_word(player_number)
 
-    return render_template('player.html', player_number=player_number, player_word=player_word,start_time=start_time)
+    return render_template('player.html', player_number=player_number, player_word=player_word,start_time=start_time,round=round,word_message=get_word_message(player_number),round_message=get_round_message(round))
 
 # a route where we will display a welcome message via an HTML template
 @app.route("/set/<int:number_of_players>")
@@ -122,7 +158,7 @@ def set_for_players(number_of_players):
 @app.route("/cheatsheet")
 def cheatsheet():
 
-    number_of_players, start_time = get_stats()
+    number_of_players, start_time, round = get_stats()
 
     number_of_players = int(number_of_players)
 
@@ -135,7 +171,21 @@ def cheatsheet():
 
         players.append(player)
 
-    return render_template('cheatsheet.html', message="Game with " + str(number_of_players) + " players", number_of_players=number_of_players,start_time=start_time,players=players)
+    return render_template('cheatsheet.html', message="Game with " + str(number_of_players) + " players", number_of_players=number_of_players,start_time=start_time,players=players, round=round)
+
+
+# a route where we will display a welcome message via an HTML template
+@app.route("/reset")
+def reset_rounds():
+
+    setup = blank_startup()
+
+    start_time  = setup['start_time']
+    round       = setup['round']
+
+    save_setup(setup)
+
+    return render_template('index.html', message="Game reset! Please set the first round with the correct num of players", number_of_players=10,start_time=start_time, round=round)
 
 # run the application
 if __name__ == "__main__":
