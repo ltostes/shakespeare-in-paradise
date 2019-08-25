@@ -8,6 +8,7 @@ Created on Thu Oct 25 10:56:00 2018
 from flask import Flask
 from flask import render_template
 from random import shuffle
+from os.path import exists
 #import pandas as pd
 from datetime import datetime
 
@@ -15,6 +16,8 @@ app = Flask(__name__)
 
 def get_stats():
     stats = []
+    
+    if not exists("data/stats.txt") : reset_setup()
 
     with open("data/stats.txt","r") as stats_file:
         for line in stats_file:
@@ -57,7 +60,7 @@ def startup(numberofplayers):
 
     return ret
 
-def blank_startup():
+def blank_setup():
 
     words = [""] * 10
 
@@ -85,7 +88,7 @@ def save_setup(setup):
 
     stats_raw = [str(number_of_players),start_time, round]
 
-    with open('data/stats.txt', mode='wt', encoding='utf-8') as stats:
+    with open('data/stats.txt', mode='w+', encoding='utf-8') as stats:
         stats.write('\n'.join(stats_raw))
 
     for player_number in range(0,len(player_words)):
@@ -95,6 +98,15 @@ def save_setup(setup):
         print("Writing :::: data/player" + str(player_number+1) + ".txt")
 
     return
+
+def reset_setup():
+
+    setup = blank_setup()
+
+    start_time  = setup['start_time']
+    round       = setup['round']
+
+    save_setup(setup)
 
 def get_player_word(player_number):
 
@@ -178,12 +190,7 @@ def cheatsheet():
 @app.route("/reset")
 def reset_rounds():
 
-    setup = blank_startup()
-
-    start_time  = setup['start_time']
-    round       = setup['round']
-
-    save_setup(setup)
+    reset_setup()
 
     return render_template('index.html', message="Game reset! Please set the first round with the correct num of players", number_of_players=10,start_time=start_time, round=round)
 
