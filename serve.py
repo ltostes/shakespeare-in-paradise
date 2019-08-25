@@ -165,10 +165,25 @@ def set_for_players(number_of_players):
     setup = startup(number_of_players)
 
     start_time = setup['start_time']
+    setup['round'] = 1
 
     save_setup(setup)
 
     return render_template('index.html', message="Started for " + str(number_of_players) + " players", number_of_players=number_of_players,start_time=start_time)
+
+@app.route("/newround")
+def newround():
+
+    number_of_players, start_time, round = get_stats()
+
+    setup = startup(number_of_players)
+
+    start_time = setup['start_time']
+    round = setup['round']
+
+    save_setup(setup)
+
+    return render_template('index.html', message="New round!", round=round,number_of_players=number_of_players,start_time=start_time)
 
 @app.route("/cheatsheet")
 def cheatsheet():
