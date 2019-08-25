@@ -201,7 +201,7 @@ def cheatsheet():
 
         players.append(player)
 
-    return render_template('cheatsheet.html', message="Game with " + str(number_of_players) + " players", number_of_players=number_of_players,start_time=start_time,players=players, round=round)
+    return render_template('cheatsheet.html', message="" + str(number_of_players) + " players game", number_of_players=number_of_players,start_time=start_time,players=players, round=round)
 
 
 # a route where we will display a welcome message via an HTML template

@@ -6,15 +6,20 @@
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Shop</title>
+    <title>Shakeaspeare in Heaven</title>
   </head>
   <body>
     <div class="container">
       <h1>{{message}}</h1>
-      </br>
-      <h3>We're at round {{round}}</h3>
-      <h3># of players: {{number_of_players}}</h3>
-      <h3>Time: {{start_time}}</h3>
+      <h3>
+        {% if round is defined %}
+          We're at round {{round}}
+        {% else %}
+          We just started! Round 1
+        {% endif %}
+      </h3>
+      <h4># of players: {{number_of_players}}</h4>
+      <h4>This round started at: {{start_time}}</h4>
     </div>
   </body>
 </html>
