@@ -129,7 +129,7 @@ def get_player_word(player_number):
 
 def get_word_message(player_number):
 
-    return "Yep. That's your word, player #{player_number}.".format(**{"player_number":player_number})
+    return "That's your word, player #{player_number}.".format(**{"player_number":player_number})
 
 
 def get_round_message(round):
