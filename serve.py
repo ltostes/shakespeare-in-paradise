@@ -137,7 +137,7 @@ def player(player_number):
     number_of_players, start_time, round = get_stats()
 
     if (player_number > number_of_players):
-        return render_template('player.html', player_number=player_number, player_word="Oops...",start_time=start_time,round=round,word_message="Seems like this player is not in the game this round",round_message="...And this is still round "+str(round))
+        return render_template('player.html', player_number=player_number, player_word="Oops...",start_time=start_time,round=round,word_message="Seems like this player is not in the game this round ",round_message="...And this is still round "+str(round))
 
     player_word = get_player_word(player_number)
 
