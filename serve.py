@@ -9,6 +9,7 @@ from flask import Flask
 from flask import render_template
 from random import shuffle
 from os.path import exists
+from os import makedirs
 #import pandas as pd
 from datetime import datetime
 
@@ -16,8 +17,10 @@ app = Flask(__name__)
 
 def get_stats():
     stats = []
-    
-    if not exists("data/stats.txt") : reset_setup()
+
+    if not exists("data") :
+        makedirs("data")
+        reset_setup()
 
     with open("data/stats.txt","r") as stats_file:
         for line in stats_file:
