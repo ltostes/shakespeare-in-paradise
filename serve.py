@@ -149,6 +149,9 @@ def hello():
 @app.route("/player/<int:player_number>")
 def player(player_number):
 
+    player_background_colors    = ['#eb1f10', '#1732ff', '#098a00', '#ffa600', '#8749b3',' #ff4d4d', '#ff4400', '#452302', '#adadad', '#000000', '#ffffff']
+    player_text_colors          = ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#000000']
+
     number_of_players, start_time, round = get_stats()
 
     if (player_number > number_of_players):
@@ -156,7 +159,7 @@ def player(player_number):
 
     player_word = get_player_word(player_number)
 
-    return render_template('player.html', player_number=player_number, player_word=player_word,start_time=start_time,round=round,word_message=get_word_message(player_number),round_message=get_round_message(round))
+    return render_template('player.html', player_number=player_number, player_word=player_word,start_time=start_time,round=round,word_message=get_word_message(player_number),round_message=get_round_message(round), player_background_colors = player_background_colors,player_text_colors = player_text_colors)
 
 # a route where we will display a welcome message via an HTML template
 @app.route("/set/<int:number_of_players>")
