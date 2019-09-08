@@ -149,10 +149,10 @@ def hello():
 @app.route("/player/<int:player_number>")
 def player(player_number):
 
-    player_background_colors    = ['#8749b3',' #ff4d4d', '#ffa600', '#ff4400', '#1732ff', '#eb1f10', '#452302', '#098a00', '#adadad', '#000000', '#ffffff']
+    player_background_colors    = ['#8749b3',' #ff4d4d', '#ffa600', '#1732ff', '#ff4400', '#eb1f10', '#452302', '#098a00', '#adadad', '#000000', '#ffffff']
     player_text_colors          = ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#000000']
 
-    # Purple, Pink, Yellow, Orange, Blue, Red, Brown, Green, Gray, Black, White
+    # Purple, Pink, Yellow, Blue, Orange, Red, Brown, Green, Gray, Black, White
 
     number_of_players, start_time, round = get_stats()
 
