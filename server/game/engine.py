@@ -1,128 +1,180 @@
-"""Object for tracking game status"""
-from random import shuffle
-from os.path import exists
-from os import makedirs
-#import pandas as pd
 from datetime import datetime
+import time
+import random
+import math
+import string
+import os
+import copy
 
+PLAYER_COLORS    = {
+                                'Purple' : {'background_color' : '#8749b3', 'text_color' : '#ffffff'},
+                                'Pink'   : {'background_color' : '#ff4d4d', 'text_color' : '#ffffff'},
+                                'Yellow' : {'background_color' : '#ffa600', 'text_color' : '#ffffff'},
+                                'Blue'   : {'background_color' : '#1732ff', 'text_color' : '#ffffff'},
+                                'Orange' : {'background_color' : '#ff4400', 'text_color' : '#ffffff'},
+                                'Red'    : {'background_color' : '#eb1f10', 'text_color' : '#ffffff'},
+                                'Brown'  : {'background_color' : '#452302', 'text_color' : '#ffffff'},
+                                'Green'  : {'background_color' : '#098a00', 'text_color' : '#ffffff'},
+                                'Gray'   : {'background_color' : '#adadad', 'text_color' : '#ffffff'},
+                                'Black'  : {'background_color' : '#000000', 'text_color' : '#ffffff'},
+                                'White'  : {'background_color' : '#ffffff', 'text_color' : '#000000'}
+}
 
-def get_stats():
-    stats = []
+PLAYER_STANDARD_ORDER = ['Purple', 'Pink', 'Yellow', 'Blue', 'Orange', 'Red', 'Brown', 'Green', 'Gray', 'Black', 'White']
 
-    if not exists("data") :
-        makedirs("data")
-        reset_setup()
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+DICTIONARIES_ROOT = os.path.join(APP_ROOT, '..', 'dictionaries')
 
-    with open("data/stats.txt","r") as stats_file:
-        for line in stats_file:
-            stats.append(line.strip())
+DICTIONARIES = {
+    "Original" :    DICTIONARIES_ROOT + "/palavras.csv",
+    "CAH" :         DICTIONARIES_ROOT + "/cah_code_names.txt",
+    "Pop Culture" : DICTIONARIES_ROOT + "/code_names_pop.txt",
+    "Standard" :    DICTIONARIES_ROOT + "/code_names_dict.txt",
+    "Simple" :      DICTIONARIES_ROOT + "/code_names_simple.txt",
+    "French" :      DICTIONARIES_ROOT + "/code_names_french.txt",
+    "Portuguese" :  DICTIONARIES_ROOT + "/code_names_portuguese.txt",
+    "German" :      DICTIONARIES_ROOT + "/code_names_german.txt"
+}
 
-    number_of_players = int(stats[0])
-    start_time        = stats[1]
-    round             = int(stats[2])
+class GameInfo(object):
 
-    return number_of_players, start_time, round
+    """Object for tracking game stats"""
+    def __init__(self,dictionary='Original', players = [], max_singles = 1, default_game_id=False):
+        self.dictionary = dictionary
+        if default_game_id:
+            self.game_id = 'DEFAULT' # self.generate_game_id()
+        else:
+            self.game_id = self.generate_game_id()
+        self.players = players
+        self.date_created = datetime.now()
+        self.date_modified = self.date_created
+        self.max_singles = max_singles
+        self.rounds = []
 
-def load_words(words_path='palavras.csv'):
-    raw_words = []
+    def to_json(self):
+        """Serialize object to JSON"""
+        return {
+            "game_id": self.game_id,
+            "players": self.players,
+            "date_created": self.date_created.strftime(format="%Y-%m-%d %H:%M:%S"),
+            "date_modified": self.date_modified.strftime(format="%Y-%m-%d %H:%M:%S"),
+            "playtime": self.__playtime(),
+            "options": {
+                "dictionary": self.dictionary
+            },
+            "rounds" : self.rounds,
+            "max_singles" : self.max_singles
+        }
 
-    with open(words_path,"r") as words_file:
-        for line in words_file:
-            raw_words.append(line.strip())
+    def round_to_json(self):
+        """Serialize round info object to JSON"""
+        return {
+            "game_id": self.game_id,
+            "players": self.players,
+            "date_created": str(self.date_created),
+            "playtime": self.__playtime(),
+            "round_number" : len(self.rounds),
+            "round_info"   : self.rounds[-1] if self.rounds else None
+        }
 
-    return raw_words
+    def start_round(self):
+        """Startup new round"""
 
-def startup(numberofplayers):
+        # Round start time
+        self.date_modified = datetime.now()
+        round_start_time = datetime.now().strftime(format="%Y-%m-%d %H:%M:%S")
 
-    words = load_words(words_path='palavras.csv')
-    shuffle(words)
+        # Getting current players set up and max singles
+        current_players = self.players
+        number_of_players = len(current_players)
+        max_singles = self.max_singles
 
-    number_of_players, start_time, round = get_stats()
+        # Load dictionary of words and shuffle
+        words = self.__load_words(self.dictionary)
+        random.shuffle(words)
+        player_words = []
 
-    number_of_players = numberofplayers
-    start_time        = datetime.now().strftime(format="%Y-%m-%d %H:%M:%S")
-    round             = round+1
+        # Defaulting max_singles if invalid
+        if (max_singles > number_of_players) or (max_singles < 0): max_singles = 1
 
-    player_words = []
+        # Sort out words equivalent to the number of players
+        for player_number in range(0,number_of_players + (max_singles - 1)):
+            player_words.append(words[int((player_number)/2)])
 
-    for player_number in range(0,number_of_players):
-        player_words.append(words[int((player_number)/2)])
+        # Scramble word orders
+        random.shuffle(player_words)
 
-    shuffle(player_words)
+        # Assign words to each player
+        round_players = []
+        for i in range(0, number_of_players):
+            player_round = copy.deepcopy(current_players[i])
+            player_round['round_word'] = player_words[i]
 
-    ret = {"words":words, "number_of_players":number_of_players, "start_time":start_time,"player_words":player_words, "round":round}
+            round_players.append(player_round)
 
-    return ret
+        # Form round object and save it
+        new_round = {}
+        new_round['start_time']     = round_start_time
+        new_round['player_info']    = round_players
 
-def blank_setup():
+        self.rounds.append(new_round)
 
-    words = [""] * 10
+    def standard_player_setup(self,number_of_players):
+        """Setup players with standard setup (colors in order)"""
+        players = []
 
-    number_of_players = 10
-    start_time        = datetime.now().strftime(format="%Y-%m-%d %H:%M:%S")
-    round             = 0
+        # Looping through standard order
+        for player_color in PLAYER_STANDARD_ORDER[:number_of_players]:
+            player = {}
+            # Assign standard colors in order
+            player['Color'] = player_color
+            player['Color_config'] = PLAYER_COLORS[player_color]
 
-    player_words = []
+            players.append(player)
 
-    for player_number in range(0,number_of_players):
-        player_words.append(words[int((player_number)/2)])
+        self.players = players
 
-    shuffle(player_words)
+    def add_player(self,player_color, player_name=''):
+        player = {}
 
-    ret = {"words":words, "number_of_players":10, "start_time":start_time,"player_words":player_words, "round":round}
+        player['Color'] = player_color
+        player['Color_config'] = PLAYER_COLORS[player_color]
 
-    return ret
+        if player_name: player['Name'] = player_name
 
-def save_setup(setup):
+        self.players.append(player)
 
-    number_of_players   = setup['number_of_players']
-    start_time          = setup['start_time']
-    player_words        = setup['player_words']
-    round               = str(setup['round'])
+    def remove_player_by_index(self,index):
+        self.players.pop(index)
 
-    stats_raw = [str(number_of_players),start_time, round]
+    def remove_player_by_info(self,player_color, player_name=''):
+        player = {}
 
-    with open('data/stats.txt', mode='w+', encoding='utf-8') as stats:
-        stats.write('\n'.join(stats_raw))
+        player['Color'] = player_color
+        player['Color_config'] = PLAYER_COLORS[player_color]
 
-    for player_number in range(0,len(player_words)):
-        player_word = player_words[player_number]
-        with open("data/player" + str(player_number+1) + ".txt", mode='wt', encoding='utf-8') as stats:
-            stats.write(player_word)
-        print("Writing :::: data/player" + str(player_number+1) + ".txt")
+        if player_name: player['Name'] = player_name
 
-    return
+        self.players.remove(player)
 
-def reset_setup():
+    def __playtime(self):
+        # 2018-08-12 10:12:25.700528
+        fmt = '%Y-%m-%d %H:%M:%S'
+        d1 = self.date_created
+        d2 = self.date_modified
+        # Convert to Unix timestamp
+        d1_ts = time.mktime(d1.timetuple())
+        d2_ts = time.mktime(d2.timetuple())
 
-    setup = blank_setup()
+        return round(float(d2_ts-d1_ts) / 60, 2)
 
-    start_time  = setup['start_time']
-    round       = setup['round']
+    def __load_words(self, dict):
+        words_file = open(DICTIONARIES[dict], 'r')
+        return [elem for elem in words_file.read().split('\n') if len(elem.strip()) > 0]
 
-    save_setup(setup)
-
-def get_player_word(player_number):
-
-    print("Reading :::: data/player" + str(player_number) + ".txt")
-
-    player_file = "data/player" + str(player_number) + ".txt"
-
-    raw = []
-
-    with open(player_file,"r") as player_file:
-        for line in player_file:
-            raw.append(line.strip())
-
-    player_word = raw[0]
-
-    return player_word
-
-def get_word_message(player_number):
-
-    return "That's your word, player #{player_number}.".format(**{"player_number":player_number})
-
-
-def get_round_message(round):
-
-    return "By the way, this is round {round}.".format(**{"round":round})
+    @classmethod
+    def generate_game_id(cls):
+        """Generate a random room ID"""
+        id_length = 5
+        return ''.join(random.SystemRandom().choice(
+            string.ascii_uppercase) for _ in range(id_length))
