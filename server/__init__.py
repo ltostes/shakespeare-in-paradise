@@ -23,20 +23,20 @@ app = Flask(__name__, template_folder="../templates", \
 
 socketio = SocketIO(app)
 
-GAMES = {}
+ROOMS = {}
 
 def get_stats():
 
     game_json = {}
 
-    if not 'DEFAULT' in GAMES:
+    if not 'DEFAULT' in ROOMS:
         game = engine.GameInfo(default_game_id=True)
         game.standard_player_setup(10)
         game.start_round()
 
-        GAMES['DEFAULT'] = game
+        ROOMS['DEFAULT'] = game
 
-    game_json = GAMES['DEFAULT'].round_to_json()
+    game_json = ROOMS['DEFAULT'].to_json()
 
     number_of_players   = len(game_json['players'])
     start_time          = game_json['date_created']
@@ -46,7 +46,7 @@ def get_stats():
 
 def get_player_word(player_number):
 
-    game_json = GAMES['DEFAULT'].round_to_json()
+    game_json = ROOMS['DEFAULT'].to_json()
 
     return game_json['round_info']['player_info'][player_number-1]['round_word']
 
@@ -112,9 +112,9 @@ def set_for_players(number_of_players):
     game.standard_player_setup(number_of_players)
     game.start_round()
 
-    start_time = GAMES['DEFAULT'].round_to_json()['date_created']
+    start_time = ROOMS['DEFAULT'].to_json()['date_created']
 
-    GAMES['DEFAULT'] = game
+    ROOMS['DEFAULT'] = game
 
     return render_template('index.html', message="Started for " + str(number_of_players) + " players", \
                                          number_of_players=number_of_players, \
@@ -123,7 +123,7 @@ def set_for_players(number_of_players):
 @app.route("/newround")
 def newround():
 
-    GAMES['DEFAULT'].start_round()
+    ROOMS['DEFAULT'].start_round()
 
     number_of_players, start_time, round = get_stats()
 
@@ -163,7 +163,7 @@ def reset_rounds():
     game.standard_player_setup(10)
     game.start_round()
 
-    GAMES['DEFAULT'] = game
+    ROOMS['DEFAULT'] = game
 
     number_of_players, start_time, round = get_stats()
 
@@ -181,7 +181,7 @@ def on_create(data):
         #teams=data['teams'],
         #dictionary=data['dictionary'])
     room = gm.game_id
-    GAMES[room] = gm
+    ROOMS[room] = gm
     join_room(room)
     emit('join_room', {'room': room})
 
@@ -197,6 +197,16 @@ def on_join(data):
         send(ROOMS[room].to_json(), room=room)
     else:
         emit('error', {'error': 'Unable to join room. Room does not exist.'})
+
+@socketio.on('leave')
+def on_leave(data):
+    """Leave the game lobby"""
+    # username = data['username']
+    room = data['room']
+    # add player and rebroadcast game object
+    # rooms[room].remove_player(username)
+    leave_room(room)
+    send(ROOMS[room].to_json(), room=room)
 
 @app.route('/socket_test')
 def index():

@@ -63,16 +63,7 @@ class GameInfo(object):
                 "dictionary": self.dictionary
             },
             "rounds" : self.rounds,
-            "max_singles" : self.max_singles
-        }
-
-    def round_to_json(self):
-        """Serialize round info object to JSON"""
-        return {
-            "game_id": self.game_id,
-            "players": self.players,
-            "date_created": str(self.date_created),
-            "playtime": self.__playtime(),
+            "max_singles" : self.max_singles,
             "round_number" : len(self.rounds),
             "round_info"   : self.rounds[-1] if self.rounds else None
         }

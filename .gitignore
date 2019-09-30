@@ -1,6 +1,3 @@
-# Internal Data files used #
-data/*.txt
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -46,3 +43,6 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 .sln
+
+# e2e tests
+tests/e2e/videos
