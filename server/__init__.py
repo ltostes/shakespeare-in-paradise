@@ -6,6 +6,7 @@ Created on Thu Oct 25 10:56:00 2018
 """
 
 from flask import Flask, render_template
+from flask.ext.cors import CORS
 from flask_socketio import SocketIO, join_room, emit
 from random import shuffle
 from os.path import exists
@@ -21,6 +22,7 @@ except (ImportError, ValueError):
 app = Flask(__name__, template_folder="../templates", \
                       static_folder="../static")
 
+cors = CORS(app,resources={r"/*":{"origins":"*"}})
 socketio = SocketIO(app)
 
 ROOMS = {}

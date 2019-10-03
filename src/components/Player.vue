@@ -1,40 +1,31 @@
 <template>
   <div class="player">
-      <h1 >Word: {{player_word()}}</h1>
-      <i>Round: {{round_number()}}</i>
-      <span v-if="isAdminPlayer">Now you see me</span>
+    <h1>You are player: {{ player_number }}</h1>
+    This is your word
   </div>
 </template>
 
 <script>
-import { mapGetters, mapState, mapMutations } from 'vuex';
-
 export default {
-  name: 'player',
-  computed: {
-    ...mapState(['room', 'username','player_number']),
-    ...mapGetters(['player_word','round_number','isAdminPlayer'])
+  name: 'Player',
+  data: function () {
+    return {
+      player_number : this.$route.params.player_number
+    }
   },
-  mounted() {
-    if (!this.username) this.set_username('#unknown');
-    if (!this.room) this.set_room(this.$route.params.room);
-    if (!this.player_number) this.set_player_number(this.$route.params.player_number);
-    const params = {
-      username: this.username,
-      room: this.room,
-      player_number: this.player_number,
-    };
-  },
-  methods: {
-    ...mapMutations(['set_room', 'set_username','set_player_number']),
-  },
+  mounted: function() {
+        var new_number = this.$route.params.player_number;
+        if (new_number) {
+          this.$store.commit('change_player_color_by_order',new_number)
+        }
+    }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1, h2 {
-  font-weight: normal;
+h3 {
+  margin: 40px 0 0;
 }
 ul {
   list-style-type: none;

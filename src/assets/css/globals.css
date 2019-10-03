@@ -1,0 +1,88 @@
+:root {
+  --white: #FFFFFF;
+  --black: #000000;
+  --purple: #8749b3;
+  --pink: #ff4d4d;
+  --yellow: #ffa600;
+  --blue: #007FFF;
+  --orange: #ff5500;
+  --red: #eb1f10;
+  --brown: #452302;
+  --green: #098a00;
+  --gray: #adadad;
+}
+
+body.Purple {
+    background-color: var(--purple);
+    color: var(--white);
+}
+body.Pink {
+    background-color: var(--pink);
+    color: var(--white);
+}
+body.Yellow {
+    background-color: var(--yellow);
+    color: var(--white);
+}
+body.Blue {
+    background-color: var(--blue);
+    color: var(--white);
+}
+body.Orange {
+    background-color: var(--orange);
+    color: var(--white);
+}
+body.Red {
+    background-color: var(--red);
+    color: var(--white);
+}
+body.Brown {
+    background-color: var(--brown);
+    color: var(--white);
+}
+body.Green {
+    background-color: var(--green);
+    color: var(--white);
+}
+body.Gray {
+    background-color: var(--gray);
+    color: var(--white);
+}
+body.Black {
+    background-color: var(--black);
+    color: var(--white);
+}
+body.White {
+    background-color: var(--white);
+    color: var(--black);
+}
+
+html, body { margin: 0; padding: 0; }
+html { height: 100%; } body { min-height: 100%; }
+
+body.Home {
+  background-color: #007FFF;
+  background-image: radial-gradient(circle, #00BFFF 0%, #007FFF 70%, #007FFF 100%);
+
+
+}
+h1.Home1 {
+    -webkit-text-fill-color: white; /* Will override color (regardless of order) */
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #007FFF;
+
+}
+
+h1.Home {
+    -webkit-text-fill-color: white; /* Will override color (regardless of order) */
+    -webkit-text-stroke-width: 0.1px;
+    -webkit-text-stroke-color: #2c3e50;
+    text-shadow-color: #2c3e50;
+
+    text-shadow:
+         3px 3px 0 #2c3e50,
+       -1px -1px 0 #2c3e50,
+        1px -1px 0 #2c3e50,
+        -1px 1px 0 #2c3e50,
+         1px 1px 0 #2c3e50;
+}

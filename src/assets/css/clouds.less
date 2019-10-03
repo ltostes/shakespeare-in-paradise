@@ -1,0 +1,108 @@
+@import "lesshat";
+
+#Clouds {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  margin: auto;
+  height: 70%;
+  overflow: hidden;
+  animation: FadeIn 3s ease-out;
+  user-select: none;
+  z-index: -1;
+}
+
+@main_opacity: 1;
+
+@keyframes FadeIn {
+  from { opacity: 0; }
+  to { opacity: @main_opacity; }
+}
+
+@duration: 60s;
+
+.Cloud {
+  position: absolute;
+  width: 100%;
+  //outline: solid 1px #F00;
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  height: 70px;
+  animation-duration: @duration;
+  animation-iteration-count: infinite;
+  animation-fill-mode: forwards;
+  animation-timing-function: linear;
+  animation-name: Float, FadeFloat;
+  z-index: -3;
+}
+
+@height: 10%;
+
+.Cloud.Foreground {
+  height: @height;
+  min-height: 20px;
+  z-index: -1;
+}
+.Cloud.Background {
+  height: @height / 1.1;
+  min-height: 8px;
+  animation-duration: @duration * 1.75;
+  //animation-delay: -2s;
+}
+
+@keyframes Float {
+  from { transform: translateX(100%) translateZ(0); }
+  to { transform: translateX(-15%) translateZ(0); }
+}
+
+/*
+@keyframes Float {
+  from { transform: translateX(100%) translateY(-100%) translateZ(0); }
+  50% { transform: translateX(55%) translateY(0) translateZ(0); }
+  to { transform: translateX(-5%) translateY(-100%) translateZ(0); }
+}
+*/
+
+@keyframes FadeFloat {
+  0%, 100% { opacity: 0; }
+  5%, 90% { opacity: @main_opacity; }
+}
+
+.Cloud-Loop (@delay, @i) when (@i > 0) {
+  .Cloud:nth-child(@{i}) {
+    animation-delay: (@delay * @i );
+    top: unit( @i * 6 ,%);
+  }
+  .Cloud.Foreground:nth-child(@{i}) {
+    animation-duration: (@duration - (@i * 4));
+    height: (@height + (@i * 2.5));
+  }
+  .Cloud.Background:nth-child(@{i}) {
+    animation-duration: (@duration * 1.25 - (@i * 4));
+    //animation-duration: ((@duration * 1.75) - (@i * 2) );
+    height: ((@height / 1.1) - (@i * 1.25));
+  }
+
+  .Cloud-Loop(@delay, (@i - 1)); // Keep Looping
+}
+.Cloud-Loop (0) {} // End loop
+.Cloud-Loop ((@duration / 6.5 ) * -1, 10);
+
+
+.Cloud {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAABgCAYAAACTzNnjAAADYklEQVR4nO3dX0sUURyH8S8iIomERNBFFCGFRKWBSF0UYhQVFHXhpSBeCKbrzuz7h9NFqbvl/pudOd8zc57PKzjz+z2srs7uSBkLJ1oPdSj0JRxqxX09aJmwr+VaApwe6A/3tSJhUSIc51If3NePBIQjrVlDvM2+lt1zQWThVHfd3U0lLbnnhIYFacnd2bzcM0NDQqlP7rgqu9CWe36oSbR3zRG4Z4kFhQttuSOq3Zk23HNFBe5uGlVoxz1fzMHdSyzuOWMG7khic88bE7jjcHHPHbdwR+Hmnj+GuGNIwkBv3HuApFDorbuFZPzSA/c+slbbvYod4t5J1tzLT5V7L1lyLz1ppfbc+8kKP6qnc+8oK+5lt4V7T1kIPT13L7o1jrXq3lfnuXfcNu59dVo41zP3gluHj942x73btnLvrZPCqe64F9tW0t9PWJbaDX19DyGEUOpnKLQfSr1077aVzDvNS1/v3ftOnntH2Rpo27375PCH8AQM9NXdQTLcu8CQnjbdPdi5d4D/uZuwcg8fY5xo3d1GdOFQK+65Y4LcfoSHUp/dM8cUOX3Vi3vWmFEur5TuOWMOOdxd5J4x5uPupXHuAWN+7mYa5R4uKjjXPXc3jXHPFtW4u2mMe7CoqK9H7nYa4Z4rqnO30wj3ULGALj7ixD1TLMbdz0zCsVbdg0Ic7tbGCgNtu4eD+NzdjejSIzlQ0YWeuDuUxO9+uOENkdvF8A9PiC18jiDiiB9jG56uCpu4Mfa06b5gpC1mjA/dF4v0xYmRD+9jRnGCBGZEjEhKszH29cp9gWiRnu43GyQwB2JEukp9q/Xxd+7rQQdVvfkiFDpwnx3dxqsj0lNqlyCRnMkx9vXRfUBkaNyHxNznQsakJYJEUggSySFIpGX4ofTuswAhDL1Kug8CXCFIJIUgkZZzPSZIJIUgkRSCRFIIEklRKLXnPgRwhXfaSApBIil/guzptfsgQAj8CxGJuQmy0L77MAC3oiEpo0HyFXxwOtIad5AjGf/FSJSwKbQzPkieQYPIxsZ4HeWR1tyHRCZmfSh8ONOG+6zovplivI6SZ9SgQXPFOBImULPKMV5HeakX7otANywc40iYQFWFDmqNkTBR2bhvPKs9TN6NY5IzbUQJcWygl3rqngHMSr2r0s5vG2jFB018F1QAAAAASUVORK5CYII=);
+}
+
+.Cloud.Background {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKQAAABgCAYAAACTzNnjAAADmUlEQVR4nO3dUUsUYRjF8YOESCIhEXQRRUghUWkgUheFGEUFRV14KYgXgum6O37m+R5PF+K6pqu7486cd+b9H/jdzzzPYdatmR0p48S+lsqyjLuKgb7Hjubd50NaltjSvVkUcIKC/nafK0k4TZRwbDlP9Nl9/iSBxK4WnUW8tpxbuueeC2k4caAH7uLdWkxpzj0nUnNCmnMXbVrumZGaEoW+ustV+Wp5rFX3/MiM0tS3Zq6W5NbEsVbdJZr51fJQy+65kgpxF6fWUg607p4vmSLuwjTFPWcyQdwloZRkGHc5KCUZxl0KN/f8yUjcZUhBnOq9ew9EUgz0wV2GVMRfPXbvI+vM6l7FLnHvJOu4l58q916yjHvpKYtCm+79ZBU+qm/n3lFWcS+7Ldx7yiLR0yv3otsi9rTg3lfn415y27j31enEkV66F9w2PHpbY9zLbSv33jqZONB992LbSjp7wjIKbURfv8qyjCj0JwbaikJv3LttZdxLzUn09cm97+TjXlKu4lRr7t0nF/4h3C9O9cPdg2TiXgZGitnTirsP9riXgKvcnbDGPXxcL/a15O5G44kdzbsHjxtKmdtHeBT65h46billTj/14h42JixlLldK96AxRSlzuLvIPWRMx92X2uMeMCjlpbiHi+nFkR66e1Nb3MNFNe7e1Bb3YFFN9PXU3Z1a4h4sqnN3p5a4h4rqOvmKE/dQcTfu/kyU2NOCe1DIvJBxqjX3cJB5Ibv0Sg5UE8d67u6hJP72wwVrEbldDP/zFLGF7xFEM5ovYwvergqfZsvY04r7hJG2Jsv4xH2ySF8zZeThfUyokUK6TxLtQRmRlFrLGH29dZ8g2iN6elRrId0niHahjEhWFPo509ffuU8I3VP55osYaNt98Og2ro5IThTaoJBIzs0f1319cR8g8jP2ITH3gSFfIc1RSCSFQiI5FBJJufRSevfBAGU5cpV0HwhwjkIiKRQSSYkjPaOQSAqFRFIoJJJCIZEURaFN90EA5/imjaRQSCTl7J7Int65DwQoS/4LEYm5uHN8oC33wQDcioakXH6+hp/gg1HsapE7yJGMK2WklHCJgdbHFpJ30KBpY8s4LOWuFt0HiTxM/FL4ONSy+2DRfROVcVhK3lGDGk1VxtG4DxzdU7mMw6vliV67TwLdcOcyjsZ9MmivGGh7pmWkmKhq7C+ezTp8G8dN4lDLjRRxbEFP9MI9BJhLWOhjle78A/Zb7qzxGzBPAAAAAElFTkSuQmCC);
+}
+
+
+// Presentational
+//html, body { margin: 0; padding: 0; }
+//html { height: 100%; } body { min-height: 100%; }
+//
+//body {
+//  color: #FFF;
+//  background-color: #007FFF;
+//  background-image: radial-gradient(circle, #00BFFF 0%, #007FFF 70%, #007FFF 100%);
+//}
