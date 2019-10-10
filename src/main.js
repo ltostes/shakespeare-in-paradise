@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import App from './App.vue';
-import VueSocketIO from 'vue-socket.io';
+import VueSocketIOExt from 'vue-socket.io-extended';
+import io from 'socket.io-client';
 
 // Contains the player color definitions, to paint the body background
 import "@/assets/css/globals.css"
@@ -13,22 +14,10 @@ import store from './store';
 Vue.config.productionTip = false
 
 Vue.use(vuetify);
-//Vue.use(VueSocketIO, `//${window.location.host}`, store);
-Vue.use(VueSocketIO, 'http://localhost:5000', store);
-/*Vue.use(new VueSocketIO({
-      debug: true,
-      connection: 'http://localhost:5000',
-      params: {
-        query: 'example=value',
-        type: ['websocket']
-    },
-      vuex: {
-        store,
-        actionPrefix: 'SOCKET_',
-        mutationPrefix: 'SOCKET_'
-      },
-    })
-  );//*/
+
+const socket = io('http://localhost:5000');
+
+Vue.use(VueSocketIOExt, socket, { store });
 
 new Vue({
   vuetify,

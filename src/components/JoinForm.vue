@@ -11,6 +11,9 @@
           <v-alert type="error" :value="showInputError" transition="slide-y-reverse-transition">
             Room ID required to join.
           </v-alert>
+          <v-alert type="error" :value="showRoomInexistentError" transition="slide-y-reverse-transition">
+            Room ID doesn't exist
+          </v-alert>
 
           <v-container fluid width='50' :visible="showInput">
             <v-text-field
@@ -18,13 +21,14 @@
               v-model="room_num"
               :rules="[rules.required]"
               mask="AAAAA"
+              @input="reset_error"
             ></v-text-field>
           </v-container>
         </v-container>
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 
 export default {
   name: "create-form",
@@ -40,12 +44,17 @@ export default {
     };
   },
   computed: {
+    ...mapState(["error"]),
     room_id() {
       return this.room_num.toUpperCase();
+    },
+    showRoomInexistentError() {
+      return this.error != ''
     }
+
   },
   methods: {
-    ...mapMutations(["set_username", "set_room"]),
+    ...mapMutations(["set_username", "set_room","reset_error"]),
     joinGame() {
       // this.set_username(this.username);
       this.showInputError = false;
@@ -53,7 +62,7 @@ export default {
         const params = {
           room: this.room_num,
         };
-        this.$socket.emit('join', params);
+        this.$socket.client.emit('join', params);
       } else {
         this.showInputError = true;
       }

@@ -6,8 +6,7 @@ Created on Thu Oct 25 10:56:00 2018
 """
 
 from flask import Flask, render_template
-from flask.ext.cors import CORS
-from flask_socketio import SocketIO, join_room, emit
+from flask_socketio import SocketIO, join_room, leave_room, send, emit
 from random import shuffle
 from os.path import exists
 from os import makedirs
@@ -22,8 +21,7 @@ except (ImportError, ValueError):
 app = Flask(__name__, template_folder="../templates", \
                       static_folder="../static")
 
-cors = CORS(app,resources={r"/*":{"origins":"*"}})
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 ROOMS = {}
 
@@ -185,7 +183,9 @@ def on_create(data):
     room = gm.game_id
     ROOMS[room] = gm
     join_room(room)
+    print('Socket: game created')
     emit('join_room', {'room': room})
+    send(ROOMS[room].to_json(), room=room)
 
 @socketio.on('join')
 def on_join(data):
@@ -197,7 +197,9 @@ def on_join(data):
         # rooms[room].add_player(username)
         join_room(room)
         send(ROOMS[room].to_json(), room=room)
+        print('Socket: room joined')
     else:
+        print('Socket: join error - unexistent room')
         emit('error', {'error': 'Unable to join room. Room does not exist.'})
 
 @socketio.on('leave')
@@ -208,6 +210,7 @@ def on_leave(data):
     # add player and rebroadcast game object
     # rooms[room].remove_player(username)
     leave_room(room)
+    print('Socket: left room')
     send(ROOMS[room].to_json(), room=room)
 
 @app.route('/socket_test')

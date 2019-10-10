@@ -13,7 +13,7 @@
       <v-container fluid class="pa-0">
         <v-row>
           <v-col cols="12">
-            <v-btn>Create Game</v-btn>
+            <v-btn @click.stop="createGame">Create Game</v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -37,6 +37,10 @@ export default {
   },
   methods: {
     ...mapMutations(['reset_error']),
+    createGame() {
+      const params = {};
+      this.$socket.client.emit('create', params);
+    }
   },
 }
 </script>

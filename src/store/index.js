@@ -5,6 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    connected: false,
     available_colors: ['Purple', 'Pink', 'Yellow', 'Blue', 'Orange', 'Red', 'Brown', 'Green', 'Gray', 'Black', 'White'],
     player_color: '',
     player_round_word: '',
@@ -27,24 +28,30 @@ export default new Vuex.Store({
     },
     SOCKET_CONNECT(state) {
       state.connected = true;
+      console.log('Socket connected!');
     },
     SOCKET_DISCONNECT(state) {
       state.connected = false;
+      console.log('Socket disconnected!');
     },
     SOCKET_MESSAGE(state, message) {
       state.game = message;
       state.room = message.game_id;
       state.error = null;
+      console.log('New notification! ', message);
     },
     SOCKET_JOIN_ROOM(state, message) {
       state.error = null;
       state.room = message.room;
+      console.log('Joined room: ', message.room);
+
     },
     SOCKET_LIST_DICTIONARIES: (state, message) => {
       state.dictionaries = message.dictionaries;
     },
     SOCKET_ERROR(state, message) {
       state.error = message.error;
+      console.log('New error! ', message.error);
     },
     set_room(state, room) {
       state.room = room;

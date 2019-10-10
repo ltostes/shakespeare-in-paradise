@@ -18,12 +18,13 @@ export default {
   },
   mounted() {
     if (!this.username) this.set_username('#unknown');
-    if (!this.room) this.set_room(this.$route.params.room);
-    const params = {
-      username: this.username,
-      room: this.room,
-    };
-    this.$socket.emit('join', params);
+    if (this.room != this.$route.params.room) {
+      const params = {
+        username: this.username,
+        room: this.$route.params.room,
+      };
+      this.$socket.client.emit('join', params);
+    }
   }
 }
 </script>
