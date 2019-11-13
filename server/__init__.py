@@ -196,11 +196,38 @@ def on_join(data):
         # add player and rebroadcast game object
         # rooms[room].add_player(username)
         join_room(room)
+        emit('join_room', {'room': room})
         send(ROOMS[room].to_json(), room=room)
         print('Socket: room joined')
     else:
         print('Socket: join error - unexistent room')
         emit('error', {'error': 'Unable to join room. Room does not exist.'})
+
+@socketio.on('player_enter')
+def player_enter(data):
+    """Player entering game"""
+    # username = data['username']
+    room = data['room']
+    player_color = data['player_color']
+    player_name = data['player_name']
+
+    # add player and rebroadcast game object
+    response = rooms[room].add_player(player_color, player_name)
+    send(ROOMS[room].to_json(), room=room)
+    print('Socket: ', response)
+
+@socketio.on('player_leave')
+def player_remove(data):
+    """Player leaving game"""
+    # username = data['username']
+    room = data['room']
+    player_color = data['player_color']
+    player_name = data['player_name']
+
+    # add player and rebroadcast game object
+    response = rooms[room].remove_player_by_info(player_color, player_name)
+    send(ROOMS[room].to_json(), room=room)
+    print('Socket: ', response)
 
 @socketio.on('leave')
 def on_leave(data):

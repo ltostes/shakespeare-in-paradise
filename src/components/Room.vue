@@ -17,7 +17,7 @@ export default {
     ...mapMutations(["set_username", "set_room"]),
   },
   mounted() {
-    if (!this.username) this.set_username('#unknown');
+    if (!this.username) this.set_username('');
     if (this.room != this.$route.params.room) {
       const params = {
         username: this.username,

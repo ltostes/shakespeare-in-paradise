@@ -6,21 +6,21 @@ import string
 import os
 import copy
 
-PLAYER_COLORS    = {
-                                'Purple' : {'background_color' : '#8749b3', 'text_color' : '#ffffff'},
-                                'Pink'   : {'background_color' : '#ff4d4d', 'text_color' : '#ffffff'},
-                                'Yellow' : {'background_color' : '#ffa600', 'text_color' : '#ffffff'},
-                                'Blue'   : {'background_color' : '#1732ff', 'text_color' : '#ffffff'},
-                                'Orange' : {'background_color' : '#ff4400', 'text_color' : '#ffffff'},
-                                'Red'    : {'background_color' : '#eb1f10', 'text_color' : '#ffffff'},
-                                'Brown'  : {'background_color' : '#452302', 'text_color' : '#ffffff'},
-                                'Green'  : {'background_color' : '#098a00', 'text_color' : '#ffffff'},
-                                'Gray'   : {'background_color' : '#adadad', 'text_color' : '#ffffff'},
-                                'Black'  : {'background_color' : '#000000', 'text_color' : '#ffffff'},
-                                'White'  : {'background_color' : '#ffffff', 'text_color' : '#000000'}
-}
+#PLAYER_STANDARD_COLORS    = {
+#                                'Purple' : {'background_color' : '#8749b3', 'text_color' : '#ffffff'},
+#                                'Pink'   : {'background_color' : '#ff4d4d', 'text_color' : '#ffffff'},
+#                                'Yellow' : {'background_color' : '#ffa600', 'text_color' : '#ffffff'},
+#                                'Blue'   : {'background_color' : '#1732ff', 'text_color' : '#ffffff'},
+#                                'Orange' : {'background_color' : '#ff4400', 'text_color' : '#ffffff'},
+#                                'Red'    : {'background_color' : '#eb1f10', 'text_color' : '#ffffff'},
+#                                'Brown'  : {'background_color' : '#452302', 'text_color' : '#ffffff'},
+#                                'Green'  : {'background_color' : '#098a00', 'text_color' : '#ffffff'},
+#                                'Gray'   : {'background_color' : '#adadad', 'text_color' : '#ffffff'},
+#                                'Black'  : {'background_color' : '#000000', 'text_color' : '#ffffff'},
+#                                'White'  : {'background_color' : '#ffffff', 'text_color' : '#000000'}
+#}
 
-PLAYER_STANDARD_ORDER = ['Purple', 'Pink', 'Yellow', 'Blue', 'Orange', 'Red', 'Brown', 'Green', 'Gray', 'Black', 'White']
+PLAYER_COLORS = ['Purple', 'Pink', 'Yellow', 'Blue', 'Orange', 'Red', 'Brown', 'Green', 'Gray', 'Black', 'White']
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 DICTIONARIES_ROOT = os.path.join(APP_ROOT, '..', 'dictionaries')
@@ -46,6 +46,7 @@ class GameInfo(object):
         else:
             self.game_id = self.generate_game_id()
         self.players = players
+        self.available_colors = copy.deepcopy(PLAYER_COLORS)
         self.date_created = datetime.now()
         self.date_modified = self.date_created
         self.max_singles = max_singles
@@ -56,6 +57,7 @@ class GameInfo(object):
         return {
             "game_id": self.game_id,
             "players": self.players,
+            "available_colors": self.available_colors,
             "date_created": self.date_created.strftime(format="%Y-%m-%d %H:%M:%S"),
             "date_modified": self.date_modified.strftime(format="%Y-%m-%d %H:%M:%S"),
             "playtime": self.__playtime(),
@@ -129,11 +131,15 @@ class GameInfo(object):
         player = {}
 
         player['Color'] = player_color
-        player['Color_config'] = PLAYER_COLORS[player_color]
 
         if player_name: player['Name'] = player_name
 
-        self.players.append(player)
+        if player_color in self.available_colors:
+            self.available_colors.remove(player_color)
+            self.players.append(player)
+            return "Player {} successfully added with color {}.".format(len(self.players),player_color)
+        else:
+            return "I'm sorry, this color is not available."
 
     def remove_player_by_index(self,index):
         self.players.pop(index)
@@ -142,11 +148,17 @@ class GameInfo(object):
         player = {}
 
         player['Color'] = player_color
-        player['Color_config'] = PLAYER_COLORS[player_color]
 
         if player_name: player['Name'] = player_name
 
-        self.players.remove(player)
+        if player in self.players:
+            player_index = self.players.index(player)
+            self.available_colors +=  player_color
+            self.players.remove(player)
+            return "Player {} with color {} successfully removed.".format(player_index,player_color)
+        else:
+            return "This player doesn't exist"
+
 
     def __playtime(self):
         # 2018-08-12 10:12:25.700528

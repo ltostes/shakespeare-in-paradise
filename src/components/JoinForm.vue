@@ -12,7 +12,7 @@
             Room ID required to join.
           </v-alert>
           <v-alert type="error" :value="showRoomInexistentError" transition="slide-y-reverse-transition">
-            Room ID doesn't exist
+            Room doesn't exist
           </v-alert>
 
           <v-container fluid width='50' :visible="showInput">
@@ -48,10 +48,9 @@ export default {
     room_id() {
       return this.room_num.toUpperCase();
     },
-    showRoomInexistentError() {
-      return this.error != ''
+    showRoomInexistentError(){
+      return this.error == 'Unable to join room. Room does not exist.';
     }
-
   },
   methods: {
     ...mapMutations(["set_username", "set_room","reset_error"]),

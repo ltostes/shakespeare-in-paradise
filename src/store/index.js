@@ -3,6 +3,8 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
+import router from '@/router/index'
+
 export default new Vuex.Store({
   state: {
     connected: false,
@@ -12,6 +14,7 @@ export default new Vuex.Store({
     round_number: '',
     room:'',
     user_name: '',
+    game_status:'',
   },
   getters: {
     get_player_color_by_order: (state) => (player_number) => {
@@ -44,6 +47,7 @@ export default new Vuex.Store({
       state.error = null;
       state.room = message.room;
       console.log('Joined room: ', message.room);
+      router.push({ name: 'Room', params: { room: state.room } });
 
     },
     SOCKET_LIST_DICTIONARIES: (state, message) => {
